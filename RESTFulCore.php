@@ -37,6 +37,8 @@ class RESTFulCore implements Serializable, JsonSerializable
     private $content_disposition;
     private $content_disposition_file_name;
 
+    private $output_handler;
+
     public function __construct($authentication_attribute = '')
     {
         spl_autoload_register(array($this, 'autoloader'));
@@ -46,6 +48,10 @@ class RESTFulCore implements Serializable, JsonSerializable
 
         $this->setContentType('application/json', 'utf-8');
         $this->setContentDisposition(self::CONTENT_DISPOSITION_INLINE, '');
+
+        $this->setOutputHandler('application/json', function ($input) {
+            echo json_encode($input);
+        });
     }
 
     //<editor-fold desc="property setter and getter">
@@ -118,6 +124,52 @@ class RESTFulCore implements Serializable, JsonSerializable
     {
         $this->content_disposition = $content_disposition;
         $this->content_disposition_file_name = $content_disposition_file_name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContentType()
+    {
+        return $this->content_type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContentTypeCharset()
+    {
+        return $this->content_type_charset;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContentDisposition()
+    {
+        return $this->content_disposition;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContentDispositionFileName()
+    {
+        return $this->content_disposition_file_name;
+    }
+
+    /**
+     * @param $content_type string
+     * @param $callback callable
+     */
+    public function setOutputHandler($content_type, $callback)
+    {
+        if (is_callable($callback)) {
+            if (is_array($this->output_handler))
+                $this->output_handler[$content_type] = $callback;
+            else
+                $this->output_handler = array($content_type => $callback);
+        }
     }
 
     //</editor-fold>
@@ -271,6 +323,16 @@ class RESTFulCore implements Serializable, JsonSerializable
         } else if (!empty($this->content_disposition)) {
             header("Content-Disposition: {$this->content_disposition};");
         }
+    }
+
+    public function make_output($output)
+    {
+        $this->headerGenerator();
+
+        if (!empty($this->content_type) && !empty($this->output_handler[$this->content_type]) && is_callable($this->output_handler[$this->content_type]))
+            call_user_func($this->output_handler[$this->content_type], $output);
+        else
+            echo $output;
     }
 
     //<editor-fold desc="Serializing Section">
