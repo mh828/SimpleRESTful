@@ -443,11 +443,12 @@ class RESTFulCore implements Serializable, JsonSerializable
         if (empty($result))
             $result = $this->get_input_json();
         if (empty($result))
-            parse_str($this->read_input(), $result);
-        if (empty($result))
             $result = $_POST;
         if (empty($result))
             $result = $_REQUEST;
+
+        if (empty($result))
+            parse_str($this->read_input(), $result);
 
         if ($validation)
             $result = input_validate($result);
