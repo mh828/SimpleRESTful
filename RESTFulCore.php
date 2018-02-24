@@ -5,6 +5,10 @@ include_once 'jdf.php';
 
 class RESTFulCore implements Serializable, JsonSerializable
 {
+    const CONTENT_DISPOSITION_INLINE = 'inline';
+    const CONTENT_DISPOSITION_ATTACHMENT = 'attachment';
+
+
     /**
      * @var array
      */
@@ -28,12 +32,20 @@ class RESTFulCore implements Serializable, JsonSerializable
      */
     public $mysqli_connection;
 
+    private $content_type;
+    private $content_type_charset;
+    private $content_disposition;
+    private $content_disposition_file_name;
+
     public function __construct($authentication_attribute = '')
     {
         spl_autoload_register(array($this, 'autoloader'));
         $this->class_dirs = array();
 
         $this->authentication_attribute = $authentication_attribute;
+
+        $this->setContentType('application/json', 'utf-8');
+        $this->setContentDisposition(self::CONTENT_DISPOSITION_INLINE, '');
     }
 
     //<editor-fold desc="property setter and getter">
@@ -86,6 +98,26 @@ class RESTFulCore implements Serializable, JsonSerializable
         if (empty($this->callable_arguments) || $this->callable_arguments == null)
             $this->callable_arguments = array($this, $this->user, $this->mysqli_connection, &$this->params);
         return $this->callable_arguments;
+    }
+
+    /**
+     * @param $content_type
+     * @param $content_type_charset
+     */
+    public function setContentType($content_type, $content_type_charset)
+    {
+        $this->content_type = $content_type;
+        $this->content_type_charset = $content_type_charset;
+    }
+
+    /**
+     * @param $content_disposition
+     * @param $content_disposition_file_name
+     */
+    public function setContentDisposition($content_disposition, $content_disposition_file_name)
+    {
+        $this->content_disposition = $content_disposition;
+        $this->content_disposition_file_name = $content_disposition_file_name;
     }
 
     //</editor-fold>
@@ -224,6 +256,21 @@ class RESTFulCore implements Serializable, JsonSerializable
     public function convert_uri_to_namespace($input)
     {
         return preg_replace('/\//', '\\', $input);
+    }
+
+    public function headerGenerator()
+    {
+        if (!empty($this->content_type) && !empty($this->content_type_charset)) {
+            header("Content-Type: {$this->content_type}; charset={$this->content_type_charset}");
+        } else if (!empty($this->content_type)) {
+            header("Content-Type: {$this->content_type}; ");
+        }
+
+        if (!empty($this->content_disposition) && !empty($this->content_disposition_file_name)) {
+            header("Content-Disposition: {$this->content_disposition}; filename=\"{$this->content_disposition_file_name}\"");
+        } else if (!empty($this->content_disposition)) {
+            header("Content-Disposition: {$this->content_disposition};");
+        }
     }
 
     //<editor-fold desc="Serializing Section">
