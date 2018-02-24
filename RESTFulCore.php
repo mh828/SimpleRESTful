@@ -130,7 +130,8 @@ class RESTFulCore implements Serializable, JsonSerializable
                     } else
                         $class_instance = $class->newInstance();
 
-                    return $method->invoke($class_instance, $this);
+                    $callable_argument = $this->argument_creator($method->getNumberOfParameters(), $this->getCallableArguments());
+                    return $method->invokeArgs($class_instance, $callable_argument);
                 }
             }
 
