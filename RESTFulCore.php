@@ -22,6 +22,9 @@ class RESTFulCore implements Serializable, JsonSerializable
     private $callable_arguments;
     public $user;
 
+    private $request_class;
+    private $request_method;
+
     /**
      * @var array
      */
@@ -102,7 +105,14 @@ class RESTFulCore implements Serializable, JsonSerializable
     public function getCallableArguments()
     {
         if (empty($this->callable_arguments) || $this->callable_arguments == null)
-            $this->callable_arguments = array($this, $this->user, $this->mysqli_connection, &$this->params);
+            $this->callable_arguments = array(
+                $this,
+                $this->user,
+                $this->mysqli_connection,
+                &$this->params,
+                &$this->request_class,
+                &$this->request_method
+            );
         return $this->callable_arguments;
     }
 
@@ -172,10 +182,29 @@ class RESTFulCore implements Serializable, JsonSerializable
         }
     }
 
+    /**
+     * @return mixed
+     */
+    public function getRequestClass()
+    {
+        return $this->request_class;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequestMethod()
+    {
+        return $this->request_method;
+    }
+
     //</editor-fold>
 
     public function doRequest($class_name, $method_name)
     {
+        $this->request_class = $class_name;
+        $this->request_method = $method_name;
+
         $class_name = $this->convert_uri_to_namespace($class_name);
 
         if (class_exists($class_name)) {
