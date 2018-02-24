@@ -336,7 +336,7 @@ class RESTFulCore implements Serializable, JsonSerializable
     }
 
     //<editor-fold desc="Serializing Section">
-    private function serailizable_data_result()
+    private function serializable_data_result()
     {
         return null;
     }
@@ -349,7 +349,7 @@ class RESTFulCore implements Serializable, JsonSerializable
      */
     public function serialize()
     {
-        return $this->serailizable_data_result();
+        return $this->serializable_data_result();
     }
 
     /**
@@ -363,7 +363,7 @@ class RESTFulCore implements Serializable, JsonSerializable
      */
     public function unserialize($serialized)
     {
-        return $this->serailizable_data_result();
+        return $this->serializable_data_result();
     }
 
     /**
@@ -375,7 +375,7 @@ class RESTFulCore implements Serializable, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->serailizable_data_result();
+        return $this->serializable_data_result();
     }
 //</editor-fold>
 
