@@ -61,8 +61,8 @@ function xml_decrypt2_add_element_to_xml($value, $key, $xml)
 
 function url_joiner($url1, $url2)
 {
-    $url1 = trim(str_replace('\\', '/', $url1), '/');
-    $url2 = trim(str_replace('\\', '/', $url2), '/');
+    $url1 = rtrim(str_replace('\\', '/', $url1), '/');
+    $url2 = ltrim(str_replace('\\', '/', $url2), '/');
 
     $urls = explode('/', trim($url1 . '/' . $url2, '/'));
     $url_result = '';
@@ -74,7 +74,7 @@ function url_joiner($url1, $url2)
     }
     if (preg_match('/^\.\//', $url_result))
         $url_result = '.' . $url_result;
-    return trim($url_result, '/');//trim($url1 . '/' . $url2, '/');
+    return ($url_result);
 }
 
 /**
