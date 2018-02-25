@@ -1,6 +1,5 @@
 <?php
 include_once 'functions.php';
-include_once 'Useful.php';
 include_once 'jdf.php';
 
 class RESTFulCore implements Serializable, JsonSerializable
@@ -9,6 +8,7 @@ class RESTFulCore implements Serializable, JsonSerializable
     const CONTENT_DISPOSITION_ATTACHMENT = 'attachment';
 
 
+    //<editor-fold desc="properties">
     /**
      * @var array
      */
@@ -42,10 +42,12 @@ class RESTFulCore implements Serializable, JsonSerializable
 
     private $output_handler;
 
+    //</editor-fold>
+
     public function __construct($authentication_attribute = '')
     {
         spl_autoload_register(array($this, 'autoloader'));
-        $this->class_dirs = array();
+        $this->class_dirs = array(url_joiner(__DIR__, 'classes'));
 
         $this->authentication_attribute = $authentication_attribute;
 
