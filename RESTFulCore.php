@@ -312,6 +312,7 @@ class RESTFulCore implements Serializable, JsonSerializable
 
     public function autoloader($path)
     {
+        $path = str_replace('\\', '/', $path);
         foreach ($this->class_dirs as $class_dir) {
             $pt = ($class_dir . $path) . ".php";
             if (file_exists($pt)) {

@@ -64,7 +64,7 @@ function url_joiner($url1, $url2)
     $url1 = rtrim(str_replace('\\', '/', $url1), '/');
     $url2 = ltrim(str_replace('\\', '/', $url2), '/');
 
-    $urls = explode('/', trim($url1 . '/' . $url2, '/'));
+    $urls = explode('/', ($url1 . '/' . $url2));
     $url_result = '';
     foreach ($urls as $url) {
         if ($url == '..')
@@ -72,6 +72,8 @@ function url_joiner($url1, $url2)
         else
             $url_result .= $url . '/';
     }
+
+    $url_result = str_replace('//', '/', $url_result);
     if (preg_match('/^\.\//', $url_result))
         $url_result = '.' . $url_result;
     return ($url_result);
