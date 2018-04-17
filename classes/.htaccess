@@ -1,0 +1,5 @@
+#prevent direct access to this folder
+<file *>
+Order deny,allow
+deny from all
+</file>
