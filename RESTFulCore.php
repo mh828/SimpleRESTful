@@ -42,6 +42,8 @@ class RESTFulCore implements Serializable, JsonSerializable
 
     private $output_handler;
 
+    private $default_input_data;
+
     //</editor-fold>
 
     public function __construct($authentication_attribute = '')
@@ -198,6 +200,14 @@ class RESTFulCore implements Serializable, JsonSerializable
     public function getRequestMethod()
     {
         return $this->request_method;
+    }
+
+    /**
+     * @param mixed $default_input_data
+     */
+    public function setDefaultInputData($default_input_data)
+    {
+        $this->default_input_data = $default_input_data;
     }
 
     //</editor-fold>
@@ -460,7 +470,10 @@ class RESTFulCore implements Serializable, JsonSerializable
 
     public function get_input($validation = true)
     {
-        return $this->get_input_auto_detect($validation);
+        if ($this->default_input_data)
+            return $this->default_input_data;
+        else
+            return $this->get_input_auto_detect($validation);
     }
     //</editor-fold>
 }
