@@ -35,6 +35,11 @@ class RESTFulCore implements Serializable, JsonSerializable
      */
     public $mysqli_connection;
 
+    /**
+     * @var PDO
+     */
+    public $pdo_connection;
+
     private $content_type;
     private $content_type_charset;
     private $content_disposition;
@@ -88,6 +93,30 @@ class RESTFulCore implements Serializable, JsonSerializable
     }
 
     /**
+     * @return mysqli
+     */
+    public function getMysqliConnection()
+    {
+        return $this->mysqli_connection;
+    }
+
+    /**
+     * @param PDO $pdo_connection
+     */
+    public function setPdoConnection($pdo_connection)
+    {
+        $this->pdo_connection = $pdo_connection;
+    }
+
+    /**
+     * @return PDO
+     */
+    public function getPdoConnection()
+    {
+        return $this->pdo_connection;
+    }
+
+    /**
      * @param callable $callable_authentication_test
      */
     public function setCallableAuthenticationTest($callable_authentication_test)
@@ -112,7 +141,7 @@ class RESTFulCore implements Serializable, JsonSerializable
             $this->callable_arguments = array(
                 $this,
                 $this->user,
-                $this->mysqli_connection,
+                ($this->mysqli_connection) ? $this->mysqli_connection : $this->pdo_connection,
                 &$this->params,
                 &$this->request_class,
                 &$this->request_method
