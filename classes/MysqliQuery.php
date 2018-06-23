@@ -14,7 +14,7 @@ class MysqliQuery
 
         foreach ($columnsAndValueArray as $k => $v) {
             $cols .= " `{$k}`,";
-            if (($v == '' || $k == null) && $k != 0) {
+            if (($v == '' || $k == null) && strval($k) !== '0') {
                 $vals .= ' NULL,';
             } else {
                 $vals .= " '{$v}',";
@@ -32,7 +32,7 @@ class MysqliQuery
         $temp = '';
         foreach ($columnsAndValueArray as $k => $v) {
             $val = ' NULL';
-            if (($v != '' && $k != null) || $k == 0) {
+            if (($v != '' && $k != null) || strval($k) === '0') {
                 $val = " '{$v}'";
             }
 
