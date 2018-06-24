@@ -43,4 +43,15 @@ class MysqliQuery
 
         return "UPDATE  `{$tableName}`  SET {$temp} WHERE $condition ";
     }
+
+    /**
+     * @param $query
+     * @return null|string|string[]
+     *
+     * A way to change empty value to NULL that can accept by mysql strict mode value type
+     */
+    public static function standardize_null($query)
+    {
+        return preg_replace("/''|\"\"|'null'|\"null\"/i", 'NULL', $query);
+    }
 }
