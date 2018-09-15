@@ -1,4 +1,5 @@
-#Usage Example
+# Usage Example:
+
 Sample Project structure
 ```
     + API
