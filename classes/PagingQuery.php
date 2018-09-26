@@ -42,9 +42,9 @@ class PagingQuery
         return $query;
     }
 
-    public function retrievePageAndShowInPageFromRequest()
+    public function retrievePageAndShowInPageFromRequest($default_showInPage = 10)
     {
-        $this->showInPage = (isset($_REQUEST['showInPage'])) ? intval($_REQUEST['showInPage']) : 10;
+        $this->showInPage = (isset($_REQUEST['showInPage'])) ? intval($_REQUEST['showInPage']) : $default_showInPage;
         $this->page = (isset($_REQUEST['page'])) ? intval($_REQUEST['page']) : 0;
     }
 }
