@@ -339,7 +339,7 @@ class RESTFulCore implements Serializable, JsonSerializable
         $res = false;
 
         if (!empty($this->authentication_attribute))
-            $res = preg_match("/{$this->authentication_attribute}/", $docComment) > 0;
+            $res = preg_match("/\*\s*{$this->authentication_attribute}\s/", $docComment) > 0;
 
         return $res;
     }
