@@ -334,6 +334,35 @@ class RESTFulCore implements Serializable, JsonSerializable
         return $class;
     }
 
+    public function find_service_in_path($path, $request, $accept_empty_params = false)
+    {
+        $temp_params = array();
+
+        if (empty($request))
+            $request = $this->cut_request_from_uri();
+        $class = '';
+        $temp_path = str_replace('/', '\\', $request);
+
+        while (!empty($temp_path) && strlen($temp_path) > 0) {
+            $class_file = $path . str_replace('\\', '/', $temp_path) . '.php';
+            if (file_exists($class_file)) {
+                include_once $class_file;
+                if (class_exists($temp_path, false)) {
+                    $class = $temp_path;
+                    break;
+                }
+            }
+
+            $indx = strrpos($temp_path, '\\');
+            $tmp = substr($temp_path, $indx + 1);
+            if (!empty($tmp) || $accept_empty_params)
+                $temp_params[] = $tmp;
+            $temp_path = substr($temp_path, 0, $indx);
+        }
+        $this->params = input_validate(array_reverse($temp_params));
+        return $class;
+    }
+
     private function need_authentication_test($docComment)
     {
         $res = false;

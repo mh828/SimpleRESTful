@@ -1,7 +1,8 @@
-RewriteEngine On
 Options -Indexes
-DirectoryIndex disabled
+DirectoryIndex index.php
 DirectoryIndexRedirect off
+
+RewriteEngine On
 RewriteRule . index.php [QSA,L]
 
 #<Limit GET POST PUT DELETE>
