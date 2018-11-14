@@ -100,3 +100,16 @@ function append_php_extension($path)
 
     return $path;
 }
+
+function fillObject($obj, $inputDataObject)
+{
+    $props = new ReflectionObject($obj);
+    $props = $props->getProperties(ReflectionProperty::IS_PUBLIC);
+
+    foreach ($props as $prop) {
+        $name = $prop->name;
+        $obj->$name = isset($inputDataObject->$name) ? $inputDataObject->$name : $obj->$name;
+    }
+
+    return $obj;
+}
