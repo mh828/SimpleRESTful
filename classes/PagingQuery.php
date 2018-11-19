@@ -16,6 +16,12 @@ class PagingQuery
      */
     public $rows = array();
 
+    public function __construct($showInPage = 10, $page = 0)
+    {
+        $this->showInPage = $showInPage;
+        $this->page = $page;
+    }
+
     public function pageCountCalculate()
     {
         if ($this->showInPage > 0)
