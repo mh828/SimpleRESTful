@@ -152,6 +152,8 @@ class Useful
 
     public function IsImage($filename)
     {
+        if(!file_exists($filename))
+            return false;
         $ims = getimagesize($filename);
         if (!$ims)
             return false;
