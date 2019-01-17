@@ -152,26 +152,25 @@ class Useful
     }
 
 
-    public function IsImage($filename)
+    public function IsImage($filename, $types = array(
+        IMAGETYPE_JPEG,
+        IMAGETYPE_JPEG2000,
+        IMAGETYPE_GIF,
+        IMAGETYPE_PNG,
+        IMAGETYPE_ICO
+    ))
     {
-        if(!file_exists($filename))
+        if (!file_exists($filename))
             return false;
         $ims = getimagesize($filename);
         if (!$ims)
             return false;
 
-        $accptable = array(
-            IMAGETYPE_JPEG,
-            IMAGETYPE_JPEG2000,
-            IMAGETYPE_GIF,
-            IMAGETYPE_PNG,
-            IMAGETYPE_ICO
-        );
-
-        return in_array($ims[2], $accptable);
+        return in_array($ims[2], $types);
     }
 
-    public function rrmdir($dir)
+    public
+    function rrmdir($dir)
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
@@ -187,7 +186,8 @@ class Useful
         }
     }
 
-    public function deleteFile($filename)
+    public
+    function deleteFile($filename)
     {
         if (is_dir($filename)) {
             $objects = scandir($filename);
@@ -204,7 +204,8 @@ class Useful
             unlink($filename);
     }
 
-    public function getRequest()
+    public
+    function getRequest()
     {
         $content = file_get_contents('php://input');
         $result = json_decode($content, true);
@@ -217,7 +218,8 @@ class Useful
         return $result;
     }
 
-    public function absuloteURL($path)
+    public
+    function absuloteURL($path)
     {
         $patern = '/\.\.\//';
         $service = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[PHP_SELF]";
@@ -230,7 +232,8 @@ class Useful
         return $service . '/' . trim($path, '.');
     }
 
-    public function convertJalaliDateToGregorian($date)
+    public
+    function convertJalaliDateToGregorian($date)
     {
         if (preg_match(Useful::VALIDATION_PREG_PATERN_DATE, $date) > 0) {
             $date = explode('/', $date);
@@ -238,7 +241,8 @@ class Useful
         }
     }
 
-    public function complete_url($path = "")
+    public
+    function complete_url($path = "")
     {
         if (empty($path))
             $path = $_SERVER["REQUEST_URI"];
