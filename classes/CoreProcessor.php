@@ -70,7 +70,7 @@ class CoreProcessor
         $this->root_dir = str_replace("\\", "/", $this->_root_directory);
         $this->root_dir_relative = str_replace(str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']), '', $this->root_dir);;
         $this->base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$this->root_dir_relative";
-        $this->request = urldecode(str_replace($this->root_dir_relative, '', $_SERVER['REQUEST_URI']));
+        $this->request = strtok(urldecode(str_replace($this->root_dir_relative, '', $_SERVER['REQUEST_URI'])), '?');
         $this->full_request = $this->root_dir . $this->request;
     }
 
