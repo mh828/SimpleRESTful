@@ -41,7 +41,7 @@ class Request implements SingletonInterface
     public function requestURI($request_url = null, $entry_point = null)
     {
         if (is_null($request_url))
-            $request_url = $_SERVER['REQUEST_URI'];
+            $request_url = parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
         if (is_null($entry_point))
             $entry_point = dirname($_SERVER['SCRIPT_NAME']);
 

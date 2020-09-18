@@ -14,6 +14,9 @@ class Core
     /** @var Request */
     private $request = null;
 
+    private $_defaultClass = null;
+    private $_defaultMethodName = null;
+
     public function __construct()
     {
         spl_autoload_register(array($this, 'autoloader'));
@@ -25,7 +28,7 @@ class Core
 
         try {
             Response::_getInstance()->setResponseBody(
-                $this->instantiateRequest($this->request->getClass(), $this->request->getMethod())
+                $this->instantiateRequest($this->request->getClass() ?? $this->_defaultClass, $this->request->getMethod() ?? $this->_defaultMethodName)
             );
 
         } catch (HTTPExceptions $exception) {
@@ -47,7 +50,7 @@ class Core
 
     public function run()
     {
-        $this->addMiddleware(function($next){
+        $this->addMiddleware(function ($next) {
             $this->processRequest();
             $next();
         });
@@ -96,6 +99,8 @@ class Core
         if ($method && $class->hasMethod($method)) {
             $method_reflection = $class->getMethod($method);
             return $method_reflection->invoke($class_instance, ...$this->methodParamsGenerator($method_reflection));
+        } else {
+            throw new HTTPExceptions(404);
         }
 
         return null;
@@ -165,4 +170,28 @@ class Core
                 return null;
         }
     }
+
+
+    //<editor-fold desc="Setters And Getters">
+
+    /**
+     * define default class to instantiate when class not found
+     * @param string $defaultClass
+     * @throws \ReflectionException
+     */
+    public function setDefaultClass(string $defaultClass): void
+    {
+        if (class_exists($defaultClass))
+            $this->_defaultClass = new \ReflectionClass($defaultClass);
+    }
+
+    /**
+     * define default method name to call when method name isn't defined in request (URL)
+     * @param string $defaultMethodName
+     */
+    public function setDefaultMethodName(string $defaultMethodName): void
+    {
+        $this->_defaultMethodName = $defaultMethodName;
+    }
+    //</editor-fold>
 }
