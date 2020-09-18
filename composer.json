@@ -1,0 +1,15 @@
+{
+  "name": "MHR/SimpleRESTful",
+  "description": "Agile Restful framework",
+  "minimum-stability": "stable",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Mahdi Hasanpour",
+      "email": "mh.hasnapour@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2"
+  }
+}
