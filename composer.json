@@ -1,5 +1,5 @@
 {
-  "name": "MHR/SimpleRESTful",
+  "name": "mhr/simple-restful",
   "description": "Agile Restful framework",
   "minimum-stability": "stable",
   "license": "GPL-3.0-or-later",
