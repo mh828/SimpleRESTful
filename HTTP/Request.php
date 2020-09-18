@@ -41,7 +41,7 @@ class Request implements SingletonInterface
     public function requestURI($request_url = null, $entry_point = null)
     {
         if (is_null($request_url))
-            $request_url = parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
+            $request_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         if (is_null($entry_point))
             $entry_point = dirname($_SERVER['SCRIPT_NAME']);
 
@@ -94,7 +94,12 @@ class Request implements SingletonInterface
             $entry_pint .= '\\' . array_shift($params);
             if (class_exists($entry_pint)) {
                 $this->_class = new \ReflectionClass($entry_pint);
-                $this->_method = array_shift($params);
+                //check method exist and class has its
+                if (($method = array_shift($params)) && $this->_class->hasMethod($method))
+                    $this->_method = $method;
+                else if ($method)
+                    array_unshift($params, $method);
+
                 break;
             }
         }

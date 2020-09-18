@@ -25,17 +25,18 @@ class Core
     public function processRequest()
     {
         $this->request = Request::_getInstance();
+        $result = null;
 
         try {
             Response::_getInstance()->setResponseBody(
-                $this->instantiateRequest($this->request->getClass() ?? $this->_defaultClass, $this->request->getMethod() ?? $this->_defaultMethodName)
+                $result = $this->instantiateRequest($this->request->getClass() ?? $this->_defaultClass, $this->request->getMethod() ?? $this->_defaultMethodName)
             );
 
         } catch (HTTPExceptions $exception) {
             Response::_getInstance()->setResponseCode($exception->getResponseCode());
         }
 
-        return null;
+        return $result;
     }
 
     public function addAutoloaderDirectory($dir)
