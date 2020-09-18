@@ -4,6 +4,7 @@ namespace SimpleRESTful;
 
 use SimpleRESTful\Exceptions\HTTPExceptions;
 use SimpleRESTful\HTTP\Request;
+use SimpleRESTful\HTTP\Response;
 
 class Core
 {
@@ -23,10 +24,12 @@ class Core
         $this->request = Request::_getInstance();
 
         try {
-            return $this->instantiateRequest($this->request->getClass(), $this->request->getMethod());
+            Response::_getInstance()->setResponseBody(
+                $this->instantiateRequest($this->request->getClass(), $this->request->getMethod())
+            );
 
         } catch (HTTPExceptions $exception) {
-            http_response_code($exception->getResponseCode());
+            Response::_getInstance()->setResponseCode($exception->getResponseCode());
         }
 
         return null;
@@ -37,22 +40,34 @@ class Core
         $this->LoaderDirectories[] = $dir;
     }
 
-    public function addMiddleware(callable $callable)
+    public function addMiddleware(\Closure $callable)
     {
         $this->middleWars[] = $callable;
     }
 
-    public function startMiddlewares()
+    public function run()
     {
-        $this->runNextMiddleware();;
+        $this->addMiddleware(function($next){
+            $this->processRequest();
+            $next();
+        });
+        $this->runNextMiddleware();
     }
 
     private function runNextMiddleware()
     {
-        if (count($this->middleWars) > 0)
-            array_shift($this->middleWars)(function () {
+        if (count($this->middleWars) > 0) {
+            /** @var \Closure $callable */
+            $callable = array_shift($this->middleWars);/*();*/
+            $next = function () {
                 $this->runNextMiddleware();
-            });
+            };
+
+            $reflection_method = new \ReflectionFunction($callable);
+            $params = $this->functionParamsGenerator($reflection_method);
+            $params[0] = $next;
+            $reflection_method->invoke(...$params);
+        }
     }
 
     private function autoloader($class)
@@ -64,16 +79,22 @@ class Core
         }
     }
 
+    /**
+     * @param \ReflectionClass $class
+     * @param \ReflectionMethod $method
+     * @return mixed|null
+     * @throws HTTPExceptions
+     * @throws \ReflectionException
+     */
     private function instantiateRequest($class, $method)
     {
         if (!$class) {
             throw new HTTPExceptions(404);
         }
 
-        $class_reflection = new \ReflectionClass($class);
-        $class_instance = $this->instantiateClass($class_reflection);
-        if ($method && $class_reflection->hasMethod($method)) {
-            $method_reflection = $class_reflection->getMethod($method);
+        $class_instance = $this->instantiateClass($class);
+        if ($method && $class->hasMethod($method)) {
+            $method_reflection = $class->getMethod($method);
             return $method_reflection->invoke($class_instance, ...$this->methodParamsGenerator($method_reflection));
         }
 
@@ -90,6 +111,20 @@ class Core
     }
 
     private function methodParamsGenerator(\ReflectionMethod $method)
+    {
+        return $this->parametersHandler($method);
+    }
+
+    private function functionParamsGenerator(\ReflectionFunction $method)
+    {
+        return $this->parametersHandler($method);
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionFunction $method
+     * @return array
+     */
+    private function parametersHandler($method)
     {
         $params = [];
         foreach ($method->getParameters() as $param) {

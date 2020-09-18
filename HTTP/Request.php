@@ -16,16 +16,20 @@ class Request implements SingletonInterface
         return self::$instance;
     }
 
+    private $URI = '';
+    /** @var \ReflectionClass */
     private $_class = null;
+    /** @var \ReflectionMethod */
     private $_method = null;
-    private $_parameters = null;
+    /** @var string[] */
+    private $_parameters = [];
 
     public function __construct($request = null)
     {
         if (is_null($request))
             $request = $this->requestURI();
-
-        $this->parseRequest($this->clearVulnerability(rawurldecode($request)) );
+        $this->URI = $this->clearVulnerability(rawurldecode($request));
+        $this->parseRequest($this->URI);
     }
 
     /**
@@ -44,33 +48,30 @@ class Request implements SingletonInterface
         return str_replace($entry_point, '', $request_url);
     }
 
-    private function parseRequest($request)
+    public function getURI()
     {
-        $params = array_filter(explode('/', $request));
-        $entry_pint = '';
-
-        while (!empty($params)) {
-            $entry_pint .= '\\' . array_shift($params);
-            if (class_exists($entry_pint)) {
-                $this->_class = $entry_pint;
-                $this->_method = array_shift($params);
-                break;
-            }
-        }
-
-        $this->_parameters = $params;
+        return $this->URI;
     }
 
+    /**
+     * @return \ReflectionClass|null
+     */
     public function getClass()
     {
         return $this->_class;
     }
 
+    /**
+     * @return \ReflectionMethod|null
+     */
     public function getMethod()
     {
         return $this->_method;
     }
 
+    /**
+     * @return string[]
+     */
     public function getParameters()
     {
         return $this->_parameters;
@@ -83,4 +84,22 @@ class Request implements SingletonInterface
         $data = htmlspecialchars($data);
         return $data;
     }
+
+    private function parseRequest($request)
+    {
+        $params = array_filter(explode('/', $request));
+        $entry_pint = '';
+
+        while (!empty($params)) {
+            $entry_pint .= '\\' . array_shift($params);
+            if (class_exists($entry_pint)) {
+                $this->_class = new \ReflectionClass($entry_pint);
+                $this->_method = array_shift($params);
+                break;
+            }
+        }
+
+        $this->_parameters = $params;
+    }
+
 }
