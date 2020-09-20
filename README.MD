@@ -3,6 +3,10 @@
 Mahdi Hasanpour [<mh.hasnapour@gmail.com>](mailto:mh.hasnapour@gmail.com)
 
 ## Getting Start
+Install library with Composer
+``` shell script
+composer require mhr/simple-restful
+```
 Create a php file that all incoming request rewrite to it file (e.g. with .htaccess and RewriteEngine ) with below codes. 
 ```php
 <?php
