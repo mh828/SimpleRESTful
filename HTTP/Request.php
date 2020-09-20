@@ -24,6 +24,9 @@ class Request implements SingletonInterface
     /** @var string[] */
     private $_parameters = [];
 
+    private $_requestBody;
+    private $_processedRequestBody;
+
     public function __construct($request = null)
     {
         if (is_null($request))
@@ -75,6 +78,43 @@ class Request implements SingletonInterface
     public function getParameters()
     {
         return $this->_parameters;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequestBody()
+    {
+        if (!$this->_requestBody) {
+            $this->_requestBody = file_get_contents('php://input');
+
+            //process request body
+            if (!($this->_processedRequestBody = json_decode($this->_requestBody, true))) {
+                parse_str($this->_requestBody, $this->_processedRequestBody);
+            }
+        }
+
+
+        return $this->_requestBody;
+    }
+
+    public function getAll()
+    {
+        $result = [];
+        $this->getRequestBody();
+        return array_merge($this->_processedRequestBody ?? [], $_REQUEST);
+    }
+
+    public function input($key, $default = null)
+    {
+        $result = $default;
+        $this->getRequestBody();
+        if (isset($this->_processedRequestBody[$key]))
+            return $this->_processedRequestBody[$key];
+        else if (isset($_REQUEST[$key]))
+            return $_REQUEST[$key];
+
+        return $result;
     }
 
     public function clearVulnerability($data)
